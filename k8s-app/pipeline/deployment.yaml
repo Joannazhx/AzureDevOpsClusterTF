@@ -22,6 +22,6 @@ jobs:
           inputs:
             command: 'init'
             workingDirectory: '$(System.DefaultWorkingDirectory)/k8s-app/terraform/pre'
-            environmentServiceName: Pay-As-You-Go(d61a7896-da68-4e89-b3c7-02bd247ccd9a)
+            environmentServiceName: "Azure Service Manage"
             allowTelemetryCollection: false
             runAzLogin: true 
