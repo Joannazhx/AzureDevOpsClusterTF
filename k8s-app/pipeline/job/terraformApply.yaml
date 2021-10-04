@@ -58,8 +58,6 @@ jobs:
           workingDirectory: $$(workingDirectory)
           # environmentServiceName: ${{ parameters.serviceConnection }}
           # commandOptions: ${{ parameters.commandArguments }}
-          allowTelemetryCollection: false
-          runAzLogin: true 
           backendType: azurerm
           backendServiceArm: '${{ parameters.serviceConnection }}'
           # create backend storage account if doesn't exist
