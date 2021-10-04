@@ -26,8 +26,8 @@ jobs:
     variables: 
       workingDirectory: ${{ parameters.terraformDir }}
     steps:
-      # - checkout: self
-      - checkout: none
+      - checkout: self
+      # - checkout: none
 
       - task: AzureCLI@2
         displayName: Azure CLI
