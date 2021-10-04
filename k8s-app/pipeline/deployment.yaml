@@ -55,4 +55,5 @@ jobs:
           inputs:
             command: apply
             environmentServiceName: 'Azure Service Manage'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/k8s-app/terraform/pre'
             commandOptions: '$(Build.ArtifactStagingDirectory)/terraform.tfplan'
