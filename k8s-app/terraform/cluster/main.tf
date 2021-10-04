@@ -20,14 +20,12 @@ terraform {
 
 # Terraform State Storage to Azure Storage Container
   backend "azurerm" {
-    resource_group_name   = "terraform-storage-rg"
-    storage_account_name  = "edappterraformstorage"
+    resource_group_name   = "edapp-aks-terraform-storage-rg-dev"
+    storage_account_name  = "ftstateaccount"
     container_name        = "tfstate"
     key                   = "edapp.dev.terraform.tfstate"
   }  
 }
-
-
 
 # 2. Terraform Provider Block for AzureRM
 provider "azurerm" {
@@ -36,7 +34,18 @@ provider "azurerm" {
   }
 }
 
-# 3. Terraform Resource Block: Define a Random Pet Resource
-resource "random_pet" "aksrandom" {
-
+module "cluster-rg" {
+  source                = "../module/resource_group/"
+  resource_group_name   = var.resource_group_name
+  location              = var.location
 }
+
+module "aks-cluster" {
+  source                = "../module/aks"
+  resource_group_name   = "${module.cluster-rg.resource_group_name}"
+  location              = var.location
+  cluster_name          = var.cluster_name
+  environment           = var.environment
+  ssh_key               = var.ssh_key
+}
+
