@@ -55,4 +55,4 @@ jobs:
           inputs:
             command: apply
             environmentServiceName: 'Azure Service Manage'
-            commandOptions: '$(System.ArtifactStagingDirectory)/terraform.tfplan'
+            commandOptions: '$(Build.ArtifactStagingDirectory)/terraform.tfplan'
