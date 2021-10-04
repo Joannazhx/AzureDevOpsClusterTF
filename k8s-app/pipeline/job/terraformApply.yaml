@@ -29,17 +29,17 @@ jobs:
       - checkout: self
       # - checkout: none
 
-      - task: AzureCLI@2
-        displayName: Azure CLI
-        inputs:
-          azureSubscription: Azure Service Manage
-          scriptType: bash
-          scriptLocation: inlineScript
-          inlineScript: |
-            export AZURE_DEVOPS_EXT_PAT=$(System.AccessToken)
-            az devops configure --defaults organization=https://dev.azure.com/joannaunswit/ project="joannaunswit"
-            az pipelines build list
-            # az devops login
+      # - task: AzureCLI@2
+      #   displayName: Azure CLI
+      #   inputs:
+      #     azureSubscription: Azure Service Manage
+      #     scriptType: bash
+      #     scriptLocation: inlineScript
+      #     inlineScript: |
+      #       export AZURE_DEVOPS_EXT_PAT=$(System.AccessToken)
+      #       az devops configure --defaults organization=https://dev.azure.com/joannaunswit/ project="joannaunswit"
+      #       az pipelines build list
+      #       # az devops login
       
       - task: TerraformInstaller@0
         displayName: Terraform Install
@@ -51,6 +51,7 @@ jobs:
       #     terraformDir: $(workingDirectory)
       #     terraformCommand: 'init'
       #     serviceConnection: ${{ parameters.serviceConnection }}
+      
       - task: TerraformCLI@0
         displayName: Terraform init
         inputs:
