@@ -1,0 +1,33 @@
+trigger:
+  branches:
+    include:
+      - master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages: 
+  - stage: PrepareTerraformCheck
+    displayName: Check Prepare Terraform
+    jobs:
+      - template: job/terraformApply.yaml
+        parameters:
+          terraformDir: $(System.DefaultWorkingDirectory)/k8s-app/terraform/pre
+          localApply: true
+
+  - stage: ClusterTerraformApply
+    displayName: Apply Cluster Terraform
+    dependsOn: PrepareTerraformCheck
+    jobs:
+      - template: job/terraformApply.yaml
+        parameters:
+          terraformDir: $(System.DefaultWorkingDirectory)/k8s-app/terraform/cluster
+          remoteBackend: 
+            backendType: azurerm
+            backendAzureRmResourceGroupName: 'edapp-aks-terraform-storage-rg-dev'
+            backendAzureRmResourceGroupLocation: 'centralus'
+            backendAzureRmStorageAccountName: 'ftstateaccount'
+            backendAzureRmStorageAccountSku: 'Standard_LRS'
+            backendAzureRmContainerName: 'tfstate'
+            backendAzureRmKey: edapp.dev.terraform.tfstate
+  

@@ -46,6 +46,6 @@ module "aks-cluster" {
   location              = var.location
   cluster_name          = var.cluster_name
   environment           = var.environment
-  ssh_key               = var.ssh_key
+  # ssh_key               = var.ssh_key
 }
 
