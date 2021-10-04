@@ -34,7 +34,7 @@ jobs:
           inlineScript: |
             export AZURE_DEVOPS_EXT_PAT=$(System.AccessToken)
             az devops configure --defaults organization=https://dev.azure.com/joannaunswit/ project="joannaunswit"
-            az devops login
+            az pipelines build list
             # az devops login
 
       - bash: |
