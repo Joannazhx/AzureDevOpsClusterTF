@@ -24,6 +24,15 @@ jobs:
     steps:
       - checkout: self
 
+      - task: AzureCLI@2
+        displayName: Azure CLI
+        inputs:
+          azureSubscription: Azure Service Manage
+          scriptType: ps
+          scriptLocation: inlineScript
+          inlineScript: |
+            az login --allow-no-subscription
+
       - bash: |
           az login
           az pipelines build list
