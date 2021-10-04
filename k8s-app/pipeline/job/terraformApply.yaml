@@ -51,7 +51,7 @@ jobs:
       #     terraformDir: $(workingDirectory)
       #     terraformCommand: 'init'
       #     serviceConnection: ${{ parameters.serviceConnection }}
-      
+
       - task: TerraformCLI@0
         displayName: Terraform init
         inputs:
@@ -65,7 +65,7 @@ jobs:
           ensureBackend: true
           backendAzureRmResourceGroupName: 'edapp-aks-terraform-storage-rg-dev'
           # azure location shortname of the backend resource group and storage account
-          backendAzureRmResourceGroupLocation: 'entral US'
+          backendAzureRmResourceGroupLocation: 'centralus'
           backendAzureRmStorageAccountName: 'ftstateaccount'
           # azure storage account sku, used when creating the storage account
           backendAzureRmStorageAccountSku: 'Standard_LRS'
