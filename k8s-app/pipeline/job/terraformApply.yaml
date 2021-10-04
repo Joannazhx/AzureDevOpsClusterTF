@@ -13,6 +13,9 @@ parameters:
     type: boolean
     default: false
 
+  - name: serviceConnection
+    default: "Azure Service Manage"
+
 jobs:
   - job: TerraformValidateJob
     displayName: Check and Apply Terraform
@@ -20,6 +23,15 @@ jobs:
       workingDirectory: ${{ parameters.terraformDir }}
     steps:
       - checkout: self
+
+      - task: AzureCLI@2
+        displayName: Az Login
+        inputs:
+          azureSubscription: ${{ parameters.serviceConnection }}
+          scriptType: ps
+          scriptLocation: inlineScript
+          inlineScript: |
+            az login --allow-no-subscription
       
       - task: TerraformInstaller@0
         displayName: Terraform Install
@@ -30,19 +42,22 @@ jobs:
         parameters:
           terraformDir: $(workingDirectory)
           terraformCommand: 'init'
+          serviceConnection: ${{ parameters.serviceConnection }}
 
       - template: ../step/terraformTask.yaml
         parameters:
           terraformDir: $(workingDirectory)
           terraformCommand: 'validate'
           commandArguments: ${{ parameters.terraformCommandArgument }}
+          serviceConnection: ${{ parameters.serviceConnection }}
 
       - template: ../step/terraformTask.yaml
         parameters:
           terraformDir: $(workingDirectory)
           terraformCommand: 'plan'
           commandArguments: '${{ parameters.terraformCommandArgument }} -out=$(Build.ArtifactStagingDirectory)/terraform.tfplan -detailed-exitcode'
-
+          serviceConnection: ${{ parameters.serviceConnection }}
+          
       - bash: |
           env | sort
         displayName: 'output env var'
