@@ -33,7 +33,7 @@ jobs:
           parameters:
             TerraformDir: $(workingDirectory)
             terraformCommand: 'plan'
-            commandOptions: '-out=$(Build.ArtifactStagingDirectory)/terraform.tfplan -detailed-exitcode'
+            commandArguments: '-out=$(Build.ArtifactStagingDirectory)/terraform.tfplan -detailed-exitcode'
 
         - bash: |
             env | sort
