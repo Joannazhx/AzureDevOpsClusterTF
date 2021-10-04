@@ -12,13 +12,23 @@ variable "location" {
 # Azure Resource Group Name
 variable "resource_group_name" {
   type = string
-  default = "edapp-terraform-aks"
+  default = "edapp-aks-rg"
 }
 
 # Azure AKS Environment Name
+variable "cluster_name" {
+  default = "edapp-aks"
+}
+
+variable "ssh_key" {
+  
+}
+
 variable "environment" {
   type = string  
   default = "dev"
 }
+
+
 
 

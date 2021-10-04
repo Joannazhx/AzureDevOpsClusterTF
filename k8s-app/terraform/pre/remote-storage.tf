@@ -14,6 +14,7 @@ module "ftstate-rg" {
   source                = "../module/resource_group/"
   resource_group_name   = var.resource_group_name
   location              = var.location
+  environment           = var.environment
   # eg, {edapp-aks}-terraform-storage-rg
 }
 
