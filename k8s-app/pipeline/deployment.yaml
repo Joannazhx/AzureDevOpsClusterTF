@@ -10,7 +10,7 @@ stages:
   - stage: PrepareTeraaform
     jobs:
       - template: job/terraformApply.yaml
-        workingDirectory: $(System.DefaultWorkingDirectory)/k8s-app/terraform/pre
+        terraformDir: $(System.DefaultWorkingDirectory)/k8s-app/terraform/pre
         localApply: true
 
 # jobs:
