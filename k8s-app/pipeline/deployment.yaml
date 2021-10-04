@@ -50,6 +50,8 @@ jobs:
           displayName: 'terraform show'
           inputs:
             command: show
+            environmentServiceName: "Azure Service Manage"
+            runAzLogin: true 
             inputTargetPlanOrStateFilePath: '$(System.ArtifactStagingDirectory)/terraform.tfplan'
 
         - task: TerraformCLI@0
