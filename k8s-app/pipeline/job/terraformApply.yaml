@@ -13,9 +13,9 @@ parameters:
     type: boolean
     default: false
 
-
 jobs:
   - job: TerraformValidateJob
+    displayName: Check and Apply Terraform
     variables: 
       workingDirectory: ${{ parameters.terraformDir }}
     steps:
@@ -30,7 +30,6 @@ jobs:
         parameters:
           terraformDir: $(workingDirectory)
           terraformCommand: 'init'
-          commandArguments: ${{ parameters.terraformCommandArgument }}
 
       - template: ../step/terraformTask.yaml
         parameters:
