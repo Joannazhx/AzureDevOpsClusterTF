@@ -25,3 +25,37 @@ jobs:
             environmentServiceName: "Azure Service Manage"
             allowTelemetryCollection: false
             runAzLogin: true 
+
+        - task: TerraformCLI@0
+          displayName: Terraform validate
+          inputs:
+            command: 'validate'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/k8s-app/terraform/pre'
+            environmentServiceName: "Azure Service Manage"
+            allowTelemetryCollection: false
+            runAzLogin: true 
+          
+        - task: TerraformCLI@0
+          displayName: Terraform plan
+          inputs:
+            command: 'plan'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/k8s-app/terraform/pre'
+            environmentServiceName: "Azure Service Manage"
+            allowTelemetryCollection: false
+            runAzLogin: true 
+            commandOptions: -out=$(Build.ArtifactStagingDirectory)/terraform.tfplan -detailed-exitcode
+
+
+        - task: TerraformCLI@0
+          displayName: 'terraform show'
+          inputs:
+            command: show
+            inputTargetPlanOrStateFilePath: '$(System.ArtifactStagingDirectory)/terraform.tfplan'
+
+        - task: TerraformCLI@0
+            displayName: 'terraform apply'
+            condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_DESTROY_CHANGES'], 'false'))
+            inputs:
+                command: apply
+                environmentServiceName: 'My Azure Service Connection'
+                commandOptions: '$(System.ArtifactStagingDirectory)/terraform.tfplan'
