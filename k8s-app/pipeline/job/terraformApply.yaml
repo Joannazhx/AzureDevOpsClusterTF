@@ -17,7 +17,7 @@ parameters:
     default: "Azure Service Manage"
 
   - name: remoteBackend
-    type: Object
+    type: object
     default: []
 
 jobs:
