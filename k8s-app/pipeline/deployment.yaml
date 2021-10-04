@@ -1,0 +1,27 @@
+# trigger:
+#   branches:
+#     include:
+#       - master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+
+jobs:
+    - job: TerraformValidateJob
+      steps:
+        - checkout: self
+      
+        - task: TerraformInstaller@0
+          displayName: Terraform Install
+          inputs:
+            terraformVersion: 'latest'
+
+        - task: TerraformCLI@0
+          displayName: Terraform Init
+          inputs:
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/k8s-app/terraform/pre'
+            environmentServiceName: Pay-As-You-Go(d61a7896-da68-4e89-b3c7-02bd247ccd9a)
+            allowTelemetryCollection: false
+            runAzLogin: true 
