@@ -32,18 +32,16 @@ jobs:
           scriptType: bash
           scriptLocation: inlineScript
           inlineScript: |
+            export AZURE_DEVOPS_EXT_PAT=$(System.AccessToken)
             az devops configure --defaults organization=https://dev.azure.com/joannaunswit/ project="joannaunswit"
-            echo $(System.AccessToken) | az devops login
+            az devops login
             # az devops login
-        env:
-          AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
 
       - bash: |
           az pipelines build list
-          git pr list
         env:
           AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
-        displayName: 'Show build list and PRs'
+        displayName: 'Show build list'
       
       - task: TerraformInstaller@0
         displayName: Terraform Install
