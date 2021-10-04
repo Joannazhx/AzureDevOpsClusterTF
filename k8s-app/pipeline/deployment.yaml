@@ -7,17 +7,17 @@ pool:
   vmImage: 'ubuntu-latest'
 
 stages: 
-  - stage: PrepareTerraformCheck
-    displayName: Check Prepare Terraform
-    jobs:
-      - template: job/terraformApply.yaml
-        parameters:
-          terraformDir: $(System.DefaultWorkingDirectory)/k8s-app/terraform/pre
-          localApply: true
+  # - stage: PrepareTerraformCheck
+  #   displayName: Check Prepare Terraform
+  #   jobs:
+  #     - template: job/terraformApply.yaml
+  #       parameters:
+  #         terraformDir: $(System.DefaultWorkingDirectory)/k8s-app/terraform/pre
+  #         localApply: true
 
   - stage: ClusterTerraformApply
     displayName: Apply Cluster Terraform
-    dependsOn: PrepareTerraformCheck
+    # dependsOn: PrepareTerraformCheck
     jobs:
       - template: job/terraformApply.yaml
         parameters:

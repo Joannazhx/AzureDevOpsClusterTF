@@ -22,7 +22,8 @@ jobs:
     variables: 
       workingDirectory: ${{ parameters.terraformDir }}
     steps:
-      - checkout: self
+      # - checkout: self
+      - checkout: none
 
       - task: AzureCLI@2
         displayName: Azure CLI
@@ -31,10 +32,13 @@ jobs:
           scriptType: bash
           scriptLocation: inlineScript
           inlineScript: |
-            az login
+            az devops configure --defaults organization=https://dev.azure.com/joannaunswit/ project="joannaunswit"
+            echo $(System.AccessToken) | az devops login
+            # az devops login
+          env:
+            AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
 
       - bash: |
-          az login
           az pipelines build list
           git pr list
         env:
