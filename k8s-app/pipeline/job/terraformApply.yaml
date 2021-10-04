@@ -27,19 +27,6 @@ jobs:
       workingDirectory: ${{ parameters.terraformDir }}
     steps:
       - checkout: self
-      # - checkout: none
-
-      # - task: AzureCLI@2
-      #   displayName: Azure CLI
-      #   inputs:
-      #     azureSubscription: Azure Service Manage
-      #     scriptType: bash
-      #     scriptLocation: inlineScript
-      #     inlineScript: |
-      #       export AZURE_DEVOPS_EXT_PAT=$(System.AccessToken)
-      #       az devops configure --defaults organization=https://dev.azure.com/joannaunswit/ project="joannaunswit"
-      #       az pipelines build list
-      #       # az devops login
       
       - task: TerraformInstaller@0
         displayName: Terraform Install
@@ -52,28 +39,6 @@ jobs:
           terraformCommand: 'init'
           serviceConnection: ${{ parameters.serviceConnection }}
           remoteBackend: ${{ parameters.remoteBackend }}
-
-      # - task: TerraformCLI@0
-      #   displayName: Terraform init
-      #   inputs:
-      #     command: 'init'
-      #     workingDirectory: $(workingDirectory)
-      #     # environmentServiceName: ${{ parameters.serviceConnection }}
-      #     # commandOptions: ${{ parameters.commandArguments }}
-      #     backendType: azurerm
-      #     backendServiceArm: '${{ parameters.serviceConnection }}'
-      #     # create backend storage account if doesn't exist
-      #     ensureBackend: true
-      #     backendAzureRmResourceGroupName: 'edapp-aks-terraform-storage-rg-dev'
-      #     # azure location shortname of the backend resource group and storage account
-      #     backendAzureRmResourceGroupLocation: 'centralus'
-      #     backendAzureRmStorageAccountName: 'ftstateaccount'
-      #     # azure storage account sku, used when creating the storage account
-      #     backendAzureRmStorageAccountSku: 'Standard_LRS'
-      #     # azure blob container to store the state file
-      #     backendAzureRmContainerName: 'tfstate'
-      #     # azure blob file name
-      # backendAzureRmKey: edapp.dev.terraform.tfstate
 
 
       - template: ../step/terraformTask.yaml
@@ -90,6 +55,15 @@ jobs:
           commandArguments: '${{ parameters.terraformCommandArgument }} -out=$(Build.ArtifactStagingDirectory)/terraform.tfplan -detailed-exitcode'
           serviceConnection: ${{ parameters.serviceConnection }}
 
+      
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: '$(Build.ArtifactStagingDirectory)/terraform.tfplan'
+          artifactName: Tfplan
+        condition: succeededOrFailed()
+        displayName: Publish tfplan
+      
+
       - bash: |
           env | sort
         displayName: 'output env var'
@@ -102,4 +76,11 @@ jobs:
             displayName: Check Prepare resources Changes
             failOnStderr: true
             condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
-      
+
+      - ${{ if ne(parameters.localApply, true) }}:
+          - template: ../step/terraformTask.yaml
+            parameters:
+              terraformDir: $(workingDirectory)
+              terraformCommand: 'apply'
+              commandArguments: '${{ parameters.terraformCommandArgument }}'
+              serviceConnection: ${{ parameters.serviceConnection }}
