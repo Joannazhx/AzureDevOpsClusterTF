@@ -16,6 +16,10 @@ parameters:
   - name: serviceConnection
     default: "Azure Service Manage"
 
+  - name: remoteBackend
+    type: Object
+    default: []
+
 jobs:
   - job: TerraformValidateJob
     displayName: Check and Apply Terraform
@@ -36,23 +40,43 @@ jobs:
             az devops configure --defaults organization=https://dev.azure.com/joannaunswit/ project="joannaunswit"
             az pipelines build list
             # az devops login
-
-      - bash: |
-          az pipelines build list
-        env:
-          AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
-        displayName: 'Show build list'
       
       - task: TerraformInstaller@0
         displayName: Terraform Install
         inputs:
           terraformVersion: 'latest'
 
-      - template: ../step/terraformTask.yaml
-        parameters:
-          terraformDir: $(workingDirectory)
-          terraformCommand: 'init'
-          serviceConnection: ${{ parameters.serviceConnection }}
+      # - template: ../step/terraformTask.yaml
+      #   parameters:
+      #     terraformDir: $(workingDirectory)
+      #     terraformCommand: 'init'
+      #     serviceConnection: ${{ parameters.serviceConnection }}
+      - task: TerraformCLI@0
+        displayName: Terraform init
+        inputs:
+          command: 'init'
+          workingDirectory: $$(workingDirectory)
+          # environmentServiceName: ${{ parameters.serviceConnection }}
+          # commandOptions: ${{ parameters.commandArguments }}
+          allowTelemetryCollection: false
+          runAzLogin: true 
+          backendType: azurerm
+          backendServiceArm: '${{ parameters.serviceConnection }}'
+          # create backend storage account if doesn't exist
+          ensureBackend: true
+          backendAzureRmResourceGroupName: 'edapp-aks-terraform-storage-rg-dev'
+          # azure location shortname of the backend resource group and storage account
+          backendAzureRmResourceGroupLocation: 'entral US'
+          backendAzureRmStorageAccountName: 'ftstateaccount'
+          # azure storage account sku, used when creating the storage account
+          backendAzureRmStorageAccountSku: 'Standard_LRS'
+          # azure blob container to store the state file
+          backendAzureRmContainerName: 'tfstate'
+          # azure blob file name
+          backendAzureRmKey: edapp.dev.terraform.tfstate
+
+
+
 
       - template: ../step/terraformTask.yaml
         parameters:
