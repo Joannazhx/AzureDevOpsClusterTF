@@ -1,0 +1,86 @@
+
+parameters:
+  - name: terraformDir
+    displayName: Terraform Template Dir Path
+    type: string
+
+  - name: terraformCommandArgument
+    displayName: Terraform Command Arguments
+    type: string
+    default: ''
+
+  - name: localApply
+    type: boolean
+    default: false
+
+  - name: serviceConnection
+    default: "Azure Service Manage"
+
+  - name: remoteBackend
+    type: object
+    default: []
+
+jobs:
+  - job: TerraformValidateJob
+    displayName: Check and Apply Terraform
+    variables: 
+      workingDirectory: ${{ parameters.terraformDir }}
+    steps:
+      - checkout: self
+      
+      - task: TerraformInstaller@0
+        displayName: Terraform Install
+        inputs:
+          terraformVersion: 'latest'
+
+      - template: ../step/terraformTask.yaml
+        parameters:
+          terraformDir: $(workingDirectory)
+          terraformCommand: 'init'
+          serviceConnection: ${{ parameters.serviceConnection }}
+          remoteBackend: ${{ parameters.remoteBackend }}
+
+
+      - template: ../step/terraformTask.yaml
+        parameters:
+          terraformDir: $(workingDirectory)
+          terraformCommand: 'validate'
+          commandArguments: ${{ parameters.terraformCommandArgument }}
+          serviceConnection: ${{ parameters.serviceConnection }}
+
+      - template: ../step/terraformTask.yaml
+        parameters:
+          terraformDir: $(workingDirectory)
+          terraformCommand: 'plan'
+          commandArguments: '${{ parameters.terraformCommandArgument }} -out=$(Build.ArtifactStagingDirectory)/terraform.tfplan -detailed-exitcode'
+          serviceConnection: ${{ parameters.serviceConnection }}
+
+      
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: '$(Build.ArtifactStagingDirectory)/terraform.tfplan'
+          artifactName: Tfplan
+        condition: succeededOrFailed()
+        displayName: Publish tfplan
+      
+
+      - bash: |
+          env | sort
+        displayName: 'output env var'
+
+      - ${{ if eq(parameters.localApply, true) }}:
+          - bash: |
+              echo "TERRAFORM_PLAN_HAS_CHANGES: $TERRAFORM_PLAN_HAS_CHANGES"
+              echo "##vso[task.logissue type=error] Prepare Azure resources have changed. Please apply locally and update tfstate file"
+              exit 1
+            displayName: Check Prepare resources Changes
+            failOnStderr: true
+            condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
+
+      - ${{ if ne(parameters.localApply, true) }}:
+          - template: ../step/terraformTask.yaml
+            parameters:
+              terraformDir: $(workingDirectory)
+              terraformCommand: 'apply'
+              commandArguments: '${{ parameters.terraformCommandArgument }}'
+              serviceConnection: ${{ parameters.serviceConnection }}

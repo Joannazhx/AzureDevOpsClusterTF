@@ -20,9 +20,9 @@ variable "cluster_name" {
   default = "edapp-aks"
 }
 
-variable "ssh_key" {
+# variable "ssh_key" {
   
-}
+# }
 
 variable "environment" {
   type = string  
