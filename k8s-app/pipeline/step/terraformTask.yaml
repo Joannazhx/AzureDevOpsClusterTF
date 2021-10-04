@@ -42,7 +42,7 @@ steps:
       commandOptions: ${{ parameters.commandArguments }}
       allowTelemetryCollection: false
       runAzLogin: true 
-      - ${{ if ne(length(parameters['remoteBackend']), 0)  }}:
+      ${{ if ne(length(parameters['remoteBackend']), 0) }}:
           backendType: ${{ parameters.remoteBackend.backendType }}
           backendServiceArm: '${{ parameters.serviceConnection }}'
           ensureBackend: true
