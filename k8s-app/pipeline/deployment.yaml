@@ -53,9 +53,9 @@ jobs:
             inputTargetPlanOrStateFilePath: '$(System.ArtifactStagingDirectory)/terraform.tfplan'
 
         - task: TerraformCLI@0
-            displayName: 'terraform apply'
-            condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_DESTROY_CHANGES'], 'false'))
-            inputs:
-                command: apply
-                environmentServiceName: 'My Azure Service Connection'
-                commandOptions: '$(System.ArtifactStagingDirectory)/terraform.tfplan'
+          displayName: 'terraform apply'
+          condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_DESTROY_CHANGES'], 'false'))
+          inputs:
+            command: apply
+            environmentServiceName: 'My Azure Service Connection'
+            commandOptions: '$(System.ArtifactStagingDirectory)/terraform.tfplan'
