@@ -6,12 +6,12 @@
 pool:
   vmImage: 'ubuntu-latest'
 
-  stages: 
-    - stage: PrepareTeraaform
-      jobs:
-        - template: job/terraformApply.yaml
-          workingDirectory: $(System.DefaultWorkingDirectory)/k8s-app/terraform/pre
-          localApply: true
+stages: 
+  - stage: PrepareTeraaform
+    jobs:
+      - template: job/terraformApply.yaml
+        workingDirectory: $(System.DefaultWorkingDirectory)/k8s-app/terraform/pre
+        localApply: true
 
 # jobs:
 #     - job: TerraformValidateJob
