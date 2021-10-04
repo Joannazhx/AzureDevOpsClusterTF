@@ -28,10 +28,10 @@ jobs:
         displayName: Azure CLI
         inputs:
           azureSubscription: Azure Service Manage
-          scriptType: ps
+          scriptType: bash
           scriptLocation: inlineScript
           inlineScript: |
-            az login --allow-no-subscription
+            az login
 
       - bash: |
           az login
