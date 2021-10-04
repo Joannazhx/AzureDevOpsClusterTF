@@ -18,3 +18,8 @@ variable "storage_container_name" {
   default = "tfstate"
 }
 
+variable "environment" {
+  type = string  
+  default = "dev"
+}
+
