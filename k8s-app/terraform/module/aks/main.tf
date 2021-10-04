@@ -20,13 +20,13 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
     type = "SystemAssigned"
   }
 
-  # Linux Profile
-  linux_profile {
-    admin_username = "azureuser"
-    ssh_key {
-        key_data = var.ssh_key
-    }
-  }
+  # # Linux Profile
+  # linux_profile {
+  #   admin_username = "azureuser"
+  #   ssh_key {
+  #       key_data = var.ssh_key
+  #   }
+  # }
 
   # Network Profile
   network_profile {
