@@ -9,6 +9,8 @@ pool:
 
 jobs:
     - job: TerraformValidateJob
+      variables: 
+        workingDirectory: $(System.DefaultWorkingDirectory)/k8s-app/terraform/pre
       steps:
         - checkout: self
       
@@ -17,32 +19,20 @@ jobs:
           inputs:
             terraformVersion: 'latest'
 
-        - task: TerraformCLI@0
-          displayName: Terraform Init
-          inputs:
-            command: 'init'
-            workingDirectory: '$(System.DefaultWorkingDirectory)/k8s-app/terraform/pre'
-            environmentServiceName: "Azure Service Manage"
-            allowTelemetryCollection: false
-            runAzLogin: true 
+        - template: step/terraformTask.yaml
+          parameters:
+            TerraformDir: $(workingDirectory)
+            terraformCommand: 'init'
 
-        - task: TerraformCLI@0
-          displayName: Terraform validate
-          inputs:
-            command: 'validate'
-            workingDirectory: '$(System.DefaultWorkingDirectory)/k8s-app/terraform/pre'
-            environmentServiceName: "Azure Service Manage"
-            allowTelemetryCollection: false
-            runAzLogin: true 
-          
-        - task: TerraformCLI@0
-          displayName: Terraform plan
-          inputs:
-            command: 'plan'
-            workingDirectory: '$(System.DefaultWorkingDirectory)/k8s-app/terraform/pre'
-            environmentServiceName: "Azure Service Manage"
-            allowTelemetryCollection: false
-            runAzLogin: true 
+        - template: step/terraformTask.yaml
+          parameters:
+            TerraformDir: $(workingDirectory)
+            terraformCommand: 'validate'
+
+        - template: step/terraformTask.yaml
+          parameters:
+            TerraformDir: $(workingDirectory)
+            terraformCommand: 'plan'
             commandOptions: '-out=$(Build.ArtifactStagingDirectory)/terraform.tfplan -detailed-exitcode'
 
         - bash: |
@@ -56,3 +46,4 @@ jobs:
           displayName: Check Prepare resources Changes
           failOnStderr: true
           condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
+      

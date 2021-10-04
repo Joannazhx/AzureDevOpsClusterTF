@@ -1,0 +1,40 @@
+
+parameters:
+  - name: terraformDir
+    displayName: Terraform Template Dir Path
+    type: string
+
+  - name: terraformCommand
+    displayName: Terraform Command
+    type: string
+    default: 'init'
+    values:
+      - 'apply'
+      - 'init'
+      - 'show'
+      - 'validate'
+      - 'plan'
+      - 'destroy'
+      - 'version'
+      - 'show'
+      - 'output'
+      - 'import'
+      - 'refresh'
+
+  - name: commandArguments
+    displayName: Terraform Command Arguments
+    default: ''
+
+  - name: serviceConnection
+    default: "Azure Service Manage"
+
+steps:
+  - task: TerraformCLI@0
+    displayName: Terraform ${{ parameters.TerraformCommand }}
+    inputs:
+      command: ${{ parameters.terraformCommand }}
+      workingDirectory: ${{ parameters.terraformDir }}
+      environmentServiceName: ${{ parameters.serviceConnection }}
+      commandOptions: ${{ parameters.commandArguments }}
+      allowTelemetryCollection: false
+      runAzLogin: true 
