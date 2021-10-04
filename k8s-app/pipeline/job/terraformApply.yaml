@@ -35,8 +35,8 @@ jobs:
             az devops configure --defaults organization=https://dev.azure.com/joannaunswit/ project="joannaunswit"
             echo $(System.AccessToken) | az devops login
             # az devops login
-          env:
-            AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+        env:
+          AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
 
       - bash: |
           az pipelines build list
