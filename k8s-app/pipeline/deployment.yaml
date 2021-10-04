@@ -49,11 +49,10 @@ jobs:
             env | sort
           displayName: 'output env var'
 
-        - task: TerraformCLI@0
-          displayName: 'terraform apply'
+        - bash: |
+            echo "TERRAFORM_PLAN_HAS_CHANGES: $TERRAFORM_PLAN_HAS_CHANGES"
+            echo "##vso[task.logissue type=error] Prepare Azure resources have changed. Please apply locally and update tfstate file"
+            exit 1
+          displayName: Check Prepare resources Changes
+          failOnStderr: true
           condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
-          inputs:
-            command: apply
-            environmentServiceName: 'Azure Service Manage'
-            workingDirectory: '$(System.DefaultWorkingDirectory)/k8s-app/terraform/pre'
-            commandOptions: '$(Build.ArtifactStagingDirectory)/terraform.tfplan'
