@@ -45,15 +45,6 @@ jobs:
             runAzLogin: true 
             commandOptions: -out=$(Build.ArtifactStagingDirectory)/terraform.tfplan -detailed-exitcode
 
-
-        - task: TerraformCLI@0
-          displayName: 'terraform show'
-          inputs:
-            command: show
-            environmentServiceName: "Azure Service Manage"
-            runAzLogin: true 
-            inputTargetPlanOrStateFilePath: '$(System.ArtifactStagingDirectory)/terraform.tfplan'
-
         - task: TerraformCLI@0
           displayName: 'terraform apply'
           condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_DESTROY_CHANGES'], 'false'))
