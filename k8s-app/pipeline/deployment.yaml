@@ -6,44 +6,49 @@
 pool:
   vmImage: 'ubuntu-latest'
 
-
-jobs:
-    - job: TerraformValidateJob
-      variables: 
+  - stage: PrepareTeraaform
+    jobs:
+      - template: job/terraformApply.yaml
         workingDirectory: $(System.DefaultWorkingDirectory)/k8s-app/terraform/pre
-      steps:
-        - checkout: self
+        localApply: true
+
+# jobs:
+#     - job: TerraformValidateJob
+#       variables: 
+#         workingDirectory: $(System.DefaultWorkingDirectory)/k8s-app/terraform/pre
+#       steps:
+#         - checkout: self
       
-        - task: TerraformInstaller@0
-          displayName: Terraform Install
-          inputs:
-            terraformVersion: 'latest'
+#         - task: TerraformInstaller@0
+#           displayName: Terraform Install
+#           inputs:
+#             terraformVersion: 'latest'
 
-        - template: step/terraformTask.yaml
-          parameters:
-            TerraformDir: $(workingDirectory)
-            terraformCommand: 'init'
+#         - template: step/terraformTask.yaml
+#           parameters:
+#             TerraformDir: $(workingDirectory)
+#             terraformCommand: 'init'
 
-        - template: step/terraformTask.yaml
-          parameters:
-            TerraformDir: $(workingDirectory)
-            terraformCommand: 'validate'
+#         - template: step/terraformTask.yaml
+#           parameters:
+#             TerraformDir: $(workingDirectory)
+#             terraformCommand: 'validate'
 
-        - template: step/terraformTask.yaml
-          parameters:
-            TerraformDir: $(workingDirectory)
-            terraformCommand: 'plan'
-            commandArguments: '-out=$(Build.ArtifactStagingDirectory)/terraform.tfplan -detailed-exitcode'
+#         - template: step/terraformTask.yaml
+#           parameters:
+#             TerraformDir: $(workingDirectory)
+#             terraformCommand: 'plan'
+#             commandArguments: '-out=$(Build.ArtifactStagingDirectory)/terraform.tfplan -detailed-exitcode'
 
-        - bash: |
-            env | sort
-          displayName: 'output env var'
+#         - bash: |
+#             env | sort
+#           displayName: 'output env var'
 
-        - bash: |
-            echo "TERRAFORM_PLAN_HAS_CHANGES: $TERRAFORM_PLAN_HAS_CHANGES"
-            echo "##vso[task.logissue type=error] Prepare Azure resources have changed. Please apply locally and update tfstate file"
-            exit 1
-          displayName: Check Prepare resources Changes
-          failOnStderr: true
-          condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
+#         - bash: |
+#             echo "TERRAFORM_PLAN_HAS_CHANGES: $TERRAFORM_PLAN_HAS_CHANGES"
+#             echo "##vso[task.logissue type=error] Prepare Azure resources have changed. Please apply locally and update tfstate file"
+#             exit 1
+#           displayName: Check Prepare resources Changes
+#           failOnStderr: true
+#           condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
       

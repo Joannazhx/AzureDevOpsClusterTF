@@ -1,0 +1,51 @@
+
+parameters:
+  - name: terraformDir
+    displayName: Terraform Template Dir Path
+    type: string
+
+  - name: localApply
+    type: boolean
+    default: false
+
+jobs:
+  - job: TerraformValidateJob
+    variables: 
+      workingDirectory: ${{ parameters.terraformDir }}
+    steps:
+      - checkout: self
+      
+      - task: TerraformInstaller@0
+        displayName: Terraform Install
+        inputs:
+          terraformVersion: 'latest'
+
+      - template: step/terraformTask.yaml
+        parameters:
+          terraformDir: $(workingDirectory)
+          terraformCommand: 'init'
+
+      - template: step/terraformTask.yaml
+        parameters:
+          terraformDir: $(workingDirectory)
+          terraformCommand: 'validate'
+
+      - template: step/terraformTask.yaml
+        parameters:
+          terraformDir: $(workingDirectory)
+          terraformCommand: 'plan'
+          commandArguments: '-out=$(Build.ArtifactStagingDirectory)/terraform.tfplan -detailed-exitcode'
+
+      - bash: |
+          env | sort
+        displayName: 'output env var'
+
+      ${{ if eq(parameters.localApply, true) }}:
+          - bash: |
+              echo "TERRAFORM_PLAN_HAS_CHANGES: $TERRAFORM_PLAN_HAS_CHANGES"
+              echo "##vso[task.logissue type=error] Prepare Azure resources have changed. Please apply locally and update tfstate file"
+              exit 1
+            displayName: Check Prepare resources Changes
+            failOnStderr: true
+            condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
+      
