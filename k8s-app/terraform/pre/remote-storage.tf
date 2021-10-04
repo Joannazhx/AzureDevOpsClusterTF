@@ -13,6 +13,7 @@ provider "azurerm" {
 module "ftstate-rg" {
   source                = "../module/resource_group/"
   resource_group_name   = var.resource_group_name
+  location              = var.location
   # eg, {edapp-aks}-terraform-storage-rg
 }
 
@@ -21,4 +22,5 @@ module "remote-storage" {
   resource_group_name    = "${module.ftstate-rg.resource_group_name}"
   storage_account_name   = var.storage_account_name
   storage_container_name = var.storage_container_name
+  location               = var.location
 }

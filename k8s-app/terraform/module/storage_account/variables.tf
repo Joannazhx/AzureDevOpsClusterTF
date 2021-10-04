@@ -1,7 +1,6 @@
 # Azure Location
 variable "location" {
   type = string
-  default = "Central US"
 }
 
 # Azure Resource Group Name
