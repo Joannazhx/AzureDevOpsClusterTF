@@ -57,5 +57,5 @@ jobs:
           condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_DESTROY_CHANGES'], 'false'))
           inputs:
             command: apply
-            environmentServiceName: 'My Azure Service Connection'
+            environmentServiceName: 'Azure Service Manage'
             commandOptions: '$(System.ArtifactStagingDirectory)/terraform.tfplan'
