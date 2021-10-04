@@ -22,4 +22,12 @@ stages:
       - template: job/terraformApply.yaml
         parameters:
           terraformDir: $(System.DefaultWorkingDirectory)/k8s-app/terraform/cluster
+          remoteBackend: 
+            backendType: azurerm
+            backendAzureRmResourceGroupName: 'edapp-aks-terraform-storage-rg-dev'
+            backendAzureRmResourceGroupLocation: 'centralus'
+            backendAzureRmStorageAccountName: 'ftstateaccount'
+            backendAzureRmStorageAccountSku: 'Standard_LRS'
+            backendAzureRmContainerName: 'tfstate'
+            backendAzureRmKey: edapp.dev.terraform.tfstate
   

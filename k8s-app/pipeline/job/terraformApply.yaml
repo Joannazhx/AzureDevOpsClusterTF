@@ -46,33 +46,34 @@ jobs:
         inputs:
           terraformVersion: 'latest'
 
-      # - template: ../step/terraformTask.yaml
-      #   parameters:
-      #     terraformDir: $(workingDirectory)
-      #     terraformCommand: 'init'
-      #     serviceConnection: ${{ parameters.serviceConnection }}
+      - template: ../step/terraformTask.yaml
+        parameters:
+          terraformDir: $(workingDirectory)
+          terraformCommand: 'init'
+          serviceConnection: ${{ parameters.serviceConnection }}
+          remoteBackend: ${{ parameters.remoteBackend }}
 
-      - task: TerraformCLI@0
-        displayName: Terraform init
-        inputs:
-          command: 'init'
-          workingDirectory: $(workingDirectory)
-          # environmentServiceName: ${{ parameters.serviceConnection }}
-          # commandOptions: ${{ parameters.commandArguments }}
-          backendType: azurerm
-          backendServiceArm: '${{ parameters.serviceConnection }}'
-          # create backend storage account if doesn't exist
-          ensureBackend: true
-          backendAzureRmResourceGroupName: 'edapp-aks-terraform-storage-rg-dev'
-          # azure location shortname of the backend resource group and storage account
-          backendAzureRmResourceGroupLocation: 'centralus'
-          backendAzureRmStorageAccountName: 'ftstateaccount'
-          # azure storage account sku, used when creating the storage account
-          backendAzureRmStorageAccountSku: 'Standard_LRS'
-          # azure blob container to store the state file
-          backendAzureRmContainerName: 'tfstate'
-          # azure blob file name
-          backendAzureRmKey: edapp.dev.terraform.tfstate
+      # - task: TerraformCLI@0
+      #   displayName: Terraform init
+      #   inputs:
+      #     command: 'init'
+      #     workingDirectory: $(workingDirectory)
+      #     # environmentServiceName: ${{ parameters.serviceConnection }}
+      #     # commandOptions: ${{ parameters.commandArguments }}
+      #     backendType: azurerm
+      #     backendServiceArm: '${{ parameters.serviceConnection }}'
+      #     # create backend storage account if doesn't exist
+      #     ensureBackend: true
+      #     backendAzureRmResourceGroupName: 'edapp-aks-terraform-storage-rg-dev'
+      #     # azure location shortname of the backend resource group and storage account
+      #     backendAzureRmResourceGroupLocation: 'centralus'
+      #     backendAzureRmStorageAccountName: 'ftstateaccount'
+      #     # azure storage account sku, used when creating the storage account
+      #     backendAzureRmStorageAccountSku: 'Standard_LRS'
+      #     # azure blob container to store the state file
+      #     backendAzureRmContainerName: 'tfstate'
+      #     # azure blob file name
+      # backendAzureRmKey: edapp.dev.terraform.tfstate
 
 
       - template: ../step/terraformTask.yaml

@@ -28,6 +28,10 @@ parameters:
   - name: serviceConnection
     default: "Azure Service Manage"
 
+  - name: remoteBackend
+    type: object
+    default: []
+
 steps:
   - task: TerraformCLI@0
     displayName: Terraform ${{ parameters.TerraformCommand }}
@@ -38,3 +42,15 @@ steps:
       commandOptions: ${{ parameters.commandArguments }}
       allowTelemetryCollection: false
       runAzLogin: true 
+      - ${{ if ne(length(parameters['remoteBackend']), 0)  }}:
+          backendType: ${{ parameters.remoteBackend.backendType }}
+          backendServiceArm: '${{ parameters.serviceConnection }}'
+          ensureBackend: true
+          backendAzureRmResourceGroupName: '${{ parameters.remoteBackend.backendAzureRmResourceGroupName }}'          
+          backendAzureRmResourceGroupLocation: '${{ parameters.remoteBackend.backendAzureRmResourceGroupLocation }}'
+          backendAzureRmStorageAccountName: '${{ parameters.remoteBackend.backendAzureRmStorageAccountName }}'
+          backendAzureRmStorageAccountSku: '${{ parameters.remoteBackend.backendAzureRmStorageAccountSku }}'
+          backendAzureRmContainerName: '${{ parameters.remoteBackend.backendAzureRmContainerName }}'
+          backendAzureRmKey: '${{ parameters.remoteBackend.backendAzureRmKey }}'
+
+
