@@ -55,7 +55,7 @@ jobs:
         displayName: Terraform init
         inputs:
           command: 'init'
-          workingDirectory: $$(workingDirectory)
+          workingDirectory: $(workingDirectory)
           # environmentServiceName: ${{ parameters.serviceConnection }}
           # commandOptions: ${{ parameters.commandArguments }}
           backendType: azurerm
