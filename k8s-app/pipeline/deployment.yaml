@@ -43,7 +43,11 @@ jobs:
             environmentServiceName: "Azure Service Manage"
             allowTelemetryCollection: false
             runAzLogin: true 
-            commandOptions: -out=$(Build.ArtifactStagingDirectory)/terraform.tfplan -detailed-exitcode
+            commandOptions: '-out=$(Build.ArtifactStagingDirectory)/terraform.tfplan -detailed-exitcode'
+
+        - bash: |
+            env | sort
+          displayName: 'output env var'
 
         - task: TerraformCLI@0
           displayName: 'terraform apply'
