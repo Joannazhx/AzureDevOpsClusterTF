@@ -7,50 +7,22 @@ pool:
   vmImage: 'ubuntu-latest'
 
 stages: 
-  - stage: PrepareTeraaform
+  - stage: PrepareTerraformCheck
+    displayName: Check Prepare Terraform
     jobs:
       - template: job/terraformApply.yaml
         parameters:
           terraformDir: $(System.DefaultWorkingDirectory)/k8s-app/terraform/pre
           localApply: true
 
-# jobs:
-#     - job: TerraformValidateJob
-#       variables: 
-#         workingDirectory: $(System.DefaultWorkingDirectory)/k8s-app/terraform/pre
-#       steps:
-#         - checkout: self
-      
-#         - task: TerraformInstaller@0
-#           displayName: Terraform Install
-#           inputs:
-#             terraformVersion: 'latest'
+  - stage: ClusterTerraformApply
+    displayName: Apply Cluster Terraform
+    dependsOn: PrepareTerraformCheck
+    jobs:
+      - template: job/terraformApply.yaml
+        parameters:
+          terraformDir: $(System.DefaultWorkingDirectory)/k8s-app/terraform/cluster
+          commandArguments: '-var $(SSH_KEY)'
+  
 
-#         - template: step/terraformTask.yaml
-#           parameters:
-#             TerraformDir: $(workingDirectory)
-#             terraformCommand: 'init'
-
-#         - template: step/terraformTask.yaml
-#           parameters:
-#             TerraformDir: $(workingDirectory)
-#             terraformCommand: 'validate'
-
-#         - template: step/terraformTask.yaml
-#           parameters:
-#             TerraformDir: $(workingDirectory)
-#             terraformCommand: 'plan'
-#             commandArguments: '-out=$(Build.ArtifactStagingDirectory)/terraform.tfplan -detailed-exitcode'
-
-#         - bash: |
-#             env | sort
-#           displayName: 'output env var'
-
-#         - bash: |
-#             echo "TERRAFORM_PLAN_HAS_CHANGES: $TERRAFORM_PLAN_HAS_CHANGES"
-#             echo "##vso[task.logissue type=error] Prepare Azure resources have changed. Please apply locally and update tfstate file"
-#             exit 1
-#           displayName: Check Prepare resources Changes
-#           failOnStderr: true
-#           condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
       

@@ -4,9 +4,15 @@ parameters:
     displayName: Terraform Template Dir Path
     type: string
 
+  - name: terraformCommandArgument
+    displayName: Terraform Command Arguments
+    type: string
+    default: ''
+
   - name: localApply
     type: boolean
     default: false
+
 
 jobs:
   - job: TerraformValidateJob
@@ -24,17 +30,19 @@ jobs:
         parameters:
           terraformDir: $(workingDirectory)
           terraformCommand: 'init'
+          commandArguments: ${{ parameters.terraformCommandArgument }}
 
       - template: ../step/terraformTask.yaml
         parameters:
           terraformDir: $(workingDirectory)
           terraformCommand: 'validate'
+          commandArguments: ${{ parameters.terraformCommandArgument }}
 
       - template: ../step/terraformTask.yaml
         parameters:
           terraformDir: $(workingDirectory)
           terraformCommand: 'plan'
-          commandArguments: '-out=$(Build.ArtifactStagingDirectory)/terraform.tfplan -detailed-exitcode'
+          commandArguments: '${{ parameters.terraformCommandArgument }} -out=$(Build.ArtifactStagingDirectory)/terraform.tfplan -detailed-exitcode'
 
       - bash: |
           env | sort
