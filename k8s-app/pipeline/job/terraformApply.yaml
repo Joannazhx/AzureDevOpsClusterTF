@@ -74,8 +74,6 @@ jobs:
           backendAzureRmKey: edapp.dev.terraform.tfstate
 
 
-
-
       - template: ../step/terraformTask.yaml
         parameters:
           terraformDir: $(workingDirectory)

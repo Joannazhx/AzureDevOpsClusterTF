@@ -22,5 +22,4 @@ stages:
       - template: job/terraformApply.yaml
         parameters:
           terraformDir: $(System.DefaultWorkingDirectory)/k8s-app/terraform/cluster
-          terraformCommandArgument: '-var $(SSH_KEY)'
   
