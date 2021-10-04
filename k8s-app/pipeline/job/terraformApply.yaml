@@ -40,7 +40,7 @@ jobs:
           env | sort
         displayName: 'output env var'
 
-      ${{ if eq(parameters.localApply, true) }}:
+      - ${{ if eq(parameters.localApply, true) }}:
           - bash: |
               echo "TERRAFORM_PLAN_HAS_CHANGES: $TERRAFORM_PLAN_HAS_CHANGES"
               echo "##vso[task.logissue type=error] Prepare Azure resources have changed. Please apply locally and update tfstate file"
