@@ -20,17 +20,17 @@ jobs:
         inputs:
           terraformVersion: 'latest'
 
-      - template: step/terraformTask.yaml
+      - template: ../step/terraformTask.yaml
         parameters:
           terraformDir: $(workingDirectory)
           terraformCommand: 'init'
 
-      - template: step/terraformTask.yaml
+      - template: ../step/terraformTask.yaml
         parameters:
           terraformDir: $(workingDirectory)
           terraformCommand: 'validate'
 
-      - template: step/terraformTask.yaml
+      - template: ../step/terraformTask.yaml
         parameters:
           terraformDir: $(workingDirectory)
           terraformCommand: 'plan'
