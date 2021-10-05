@@ -35,6 +35,8 @@
               
 ```
 # Tools Install
+1. AzureCLi
+2. Terraform
 
 # Terraform Section
 ## 1. Prepare Step
@@ -89,33 +91,36 @@ http://20.106.11.18/
 ![image info](k8s-app/pics/service_connection.png)
 2. create a pipeline with path: k8s-app/pipeline/deployment.yaml
 ## yaml templates
-  entry: [k8s-app/pipeline/deployment.yaml](k8s-app/pipeline/deployment.yaml)
-  terraform jobs: [k8s-app/pipeline/job/terraformApply.yaml](k8s-app/pipeline/job/terraformApply.yaml)
-  terraformcli task: [k8s-app/pipeline/step/terraformTask.yaml](k8s-app/pipeline/step/terraformTask.yaml)
+   - entry: [k8s-app/pipeline/deployment.yaml](k8s-app/pipeline/deployment.yaml) 
+   - terraform jobs: [k8s-app/pipeline/job/terraformApply.yaml](k8s-app/pipeline/job/terraformApply.yaml)
+   - terraformcli task: [k8s-app/pipeline/step/terraformTask.yaml](k8s-app/pipeline/step/terraformTask.yaml)
   
 ## pipeline stages
- - Check Prepare Terraform
- - Apply cluster Terraform
+### brief
+ 2 stages in terraform deploy pipeline
+  - Check Prepare Terraform
+  - Apply cluster Terraform
 ![image info](k8s-app/pics/stages.png)
 ### 1. Prepare check stage
-  workdir: terraform/pre/
-    - checkout repo
-    -  install terraform in cloud agent 
-    -  tf init 
-    - tf validate
-    - tf plan 
-    -  publish .tfplan 
-    -   if resource change error ( apply local and udpate tfstate to master)
+workdir: terraform/pre/
+  - checkout repo
+  -  install terraform in cloud agent 
+  -  tf init 
+  - tf validate
+  - tf plan 
+  -  publish .tfplan 
+  -  if resource change error ( apply local and udpate tfstate to master)
 ![image info](k8s-app/pics/prepare_stage.png)
 ### 2. Cluster Apply stage
- workdir: terraform/pre/
-    - checkout repo
-    -  install terraform in cloud agent 
-    -  tf init 
-    - tf validate
-    - tf plan 
-    - publish .tfplan 
-    - tf plan 
+ workdir: terraform/cluster/
+ - checkout repo
+ - install terraform in cloud agent 
+ - tf init 
+ - tf validate
+ - tf plan 
+ - publish .tfplan 
+ - tf plan 
+
 ![image info](k8s-app/pics/cluster_stage.png)
 
 
