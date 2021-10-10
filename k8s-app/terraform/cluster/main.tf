@@ -20,10 +20,10 @@ terraform {
 
 # Terraform State Storage to Azure Storage Container
   backend "azurerm" {
-    resource_group_name   = "edapp-aks-terraform-storage-rg-dev"
+    resource_group_name   = "servain-aks-storage-rg-dev"
     storage_account_name  = "ftstateaccount"
     container_name        = "tfstate"
-    key                   = "edapp.dev.terraform.tfstate"
+    key                   = "servain.dev.terraform.tfstate"
   }  
 }
 
@@ -46,6 +46,11 @@ module "aks-cluster" {
   location              = var.location
   cluster_name          = var.cluster_name
   environment           = var.environment
-  # ssh_key               = var.ssh_key
 }
 
+module "acr" {
+  source                = "../module/acr/"
+  resource_group_name   = "${module.cluster-rg.resource_group_name}"
+  acr_name              = var.acr_name 
+  aks_principal_id      = "${module.aks-cluster.aks_cluster_principal_id}"
+}

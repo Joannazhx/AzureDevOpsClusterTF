@@ -2,31 +2,37 @@
 # 1. Azure Location (CentralUS)
 # 2. Azure Resource Group Name 
 # 3. Azure AKS Environment Name (Dev, QA, Prod)
+# 4. Azure ACR Name
 
 # Azure Location
 variable "location" {
   type = string
-  default = "Central US"
+  description = "Azure Resources Location"
+  # default = "Central US"
 }
 
 # Azure Resource Group Name
 variable "resource_group_name" {
   type = string
-  default = "edapp-aks-rg"
+  description = "Resource Group Name"
+  # default = "servain-aks-rg"
 }
 
 # Azure AKS Environment Name
 variable "cluster_name" {
-  default = "edapp-aks"
+  description = "Azure Kuberneter Cluster Name"
+  # default = "servain-aks"
 }
-
-# variable "ssh_key" {
-  
-# }
 
 variable "environment" {
   type = string  
   default = "dev"
+}
+
+variable "acr_name" {
+  type        = string
+  description = "Azure Container Reginstry Name"
+  # default = "servainacr"
 }
 
 
