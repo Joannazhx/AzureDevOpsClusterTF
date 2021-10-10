@@ -1,0 +1,5 @@
+location = "Central US"
+resource_group_name =  "servain-aks-rg"
+cluster_name = "servain-aks"
+acr_name = "servainacr"
+environment = "dev"

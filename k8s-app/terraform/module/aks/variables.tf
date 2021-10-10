@@ -23,8 +23,3 @@ variable "environment" {
   type = string  
   default = "dev"
 }
-
-# variable "ssh_key" {
-#     type =  string
-  
-# }
