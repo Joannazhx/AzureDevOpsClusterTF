@@ -46,11 +46,11 @@ module "aks-cluster" {
   location              = var.location
   cluster_name          = var.cluster_name
   environment           = var.environment
+  acr_id                = "${module.acr.acr_id}"
 }
 
 module "acr" {
   source                = "../module/acr/"
   resource_group_name   = "${module.cluster-rg.resource_group_name}"
   acr_name              = var.acr_name 
-  aks_principal_id      = "${module.aks-cluster.aks_cluster_principal_id}"
 }

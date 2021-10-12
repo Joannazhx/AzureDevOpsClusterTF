@@ -23,3 +23,8 @@ variable "environment" {
   type = string  
   default = "dev"
 }
+
+# acr that aks pull docker images from
+variable "acr_id" {
+    type = string
+}
