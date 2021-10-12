@@ -28,7 +28,7 @@
                    ├── variables.tf 
                    └── terraform.tfvars 
      ├────── k8s         # simple service k8s deployment scripts 
-     		 ├── postgresdb     # postgresDB contianer k8s deployment scripts
+     		       ├── postgresdb     # postgresDB contianer k8s deployment scripts
                    ├── configmap.yaml
                    ├── persistvoloumn.yaml
                    ├── deployment.yaml
@@ -80,8 +80,8 @@ terraform apply
 ```
 
 # Kubernetes service deploy
-/k8s/deployment.yaml, a simple nginx runs in one conatiner in one pod.
-/k8s/service.yaml, pod connect with locadbalance k8s service to allow out access.
+k8s/postgresdb, one postgresdb run in one container in one pod and connect with k8s loadbalance type servie for access out cluster, persist voloumn mounted for data storage in pod, env vars use configmap mount to container in pod
+k8s/app, servian webapp run in one container in one pod and connect with k8s loadbalance type servie for access out cluster, conf.toml use configmap to mount to conatianer in pod
 ```
 cd {local_repo_path}/k8s
 az aks get-credentials --resource-group servain-aks-rg-dev  --name servain-aks-dev --overwrite
