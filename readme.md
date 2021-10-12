@@ -78,7 +78,14 @@ terraform plan -out tfplan
 terraform show -json tfplan >> tfplan.json
 terraform apply
 ```
-
+# docker image build and push to acr
+git repo : https://github.com/Joannazhx/TechChallengeApp
+changed the net.Listen("tcp", ":{port}") for conatiner localhost
+```
+az acr login -n servainacr 
+docker build . -t servainacr.azurecr.io/techchallengeapp:latest
+docker push servainacr.azurecr.io/techchallengeapp:latest
+```
 # Kubernetes service deploy
 k8s/postgresdb, one postgresdb run in one container in one pod and connect with k8s loadbalance type servie for access out cluster, persist voloumn mounted for data storage in pod, env vars use configmap mount to container in pod
 k8s/app, servian webapp run in one container in one pod and connect with k8s loadbalance type servie for access out cluster, conf.toml use configmap to mount to conatianer in pod
