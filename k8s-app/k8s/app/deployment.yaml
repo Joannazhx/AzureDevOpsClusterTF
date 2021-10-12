@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      initContainers:
+        - name: check-postgresdb-ready
+          image: postgres:10.1
+          command: ['sh', '-c', 
+            'until pg_isready -h postgres.default.svc.cluster.local -p 5432; 
+            do echo waiting for database; sleep 2; done;']
+        - image: servainacr.azurecr.io/techchallengeapp:latest
+          name: servian-db
+          imagePullPolicy: "IfNotPresent"
+          # imagePullPolicy: "Always"
+          args: ["updatedb"]
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: config
+              mountPath: /TechChallengeApp/conf.toml
+              subPath: conf.toml
+      containers:
+        - image: servainacr.azurecr.io/techchallengeapp:latest
+          name: servian
+          imagePullPolicy: "IfNotPresent"
+          # imagePullPolicy: "Always"
+          args: ["serve"]
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: config
+              mountPath: /TechChallengeApp/conf.toml
+              subPath: conf.toml
+
+      volumes:
+        - name: config
+          configMap:
+            name: webapp-config
+
+# until pg_isready -h 20.106.30.224 -p 5432; do echo waiting for database; sleep 2; done;
+# kubectl exec postgres-7b9fb8d6c5-sjlp7 cat /etc/resolv.conf
+# postgres.default.svc.cluster.local 

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: webapp-config
+  labels:
+    app: webapp
+data:
+  conf.toml: |
+    "DbUser" = "postgres"
+    "DbPassword" = "123"
+    "DbName" = "app"
+    "DbPort" = "5432"
+    "DbHost" = "postgres.default.svc.cluster.local"
+    "ListenPort" = "3000"
