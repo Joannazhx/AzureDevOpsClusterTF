@@ -79,8 +79,8 @@ stages:
 
   - stage: DeployToKubenetesCluster
     displayName: 'Deploy To Kubenetes Cluster'
-    dependsOn:
-      - BuildAndPublishDockerImage
+    # dependsOn:
+    #   - BuildAndPublishDockerImage
 
     jobs:
       - job: DeployImageToAks
