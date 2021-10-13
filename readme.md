@@ -37,7 +37,7 @@
                    ├── configmap.yaml
                    ├── deployment.yaml
                    └── service.yaml
-     ├────── pipelines   # Azure pipeline to auto init, validate, plan, apply terraform 
+     ├────── pipelines   # Azure pipeline to auto init, validate, plan, apply terraform ; build & push docker image ; conatiner deploy to cluster
               ├── job  
                    ├── terraformApply.yaml
                    └── kuberneteApply.yaml
