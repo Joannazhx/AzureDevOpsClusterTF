@@ -80,7 +80,8 @@ terraform apply
 ```
 # docker image build and push to acr
 git repo : https://github.com/Joannazhx/TechChallengeApp
-changed the net.Listen("tcp", ":{port}") for conatiner localhost
+changed the net.Listen("tcp", ":{port}") for conatiner localhost 
+fork from servian https://github.com/servian/TechChallengeApp
 ```
 az acr login -n servainacr 
 docker build . -t servainacr.azurecr.io/techchallengeapp:latest
