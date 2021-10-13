@@ -26,7 +26,7 @@ parameters:
     default: []
 
 jobs:
-  - job: DeployPostgresToAks
+  - job: Deploy${{ parameters.Service }}ToAks
     displayName: Deploy ${{ parameters.Service }} to AKS and Clean up
 
     steps:
