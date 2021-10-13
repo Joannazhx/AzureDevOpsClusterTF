@@ -1,4 +1,3 @@
-
 parameters:
   - name: terraformDir
     displayName: Terraform Template Dir Path
