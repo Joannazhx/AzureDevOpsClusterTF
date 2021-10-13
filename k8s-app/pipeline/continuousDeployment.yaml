@@ -1,0 +1,101 @@
+resources:
+  repositories:
+    - repository: App # The app repo for build docker image
+      type: github
+      endpoint: Joannazhx
+      name: Joannazhx/TechChallengeApp
+      trigger:
+        branches:
+          include: master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages: 
+  - stage: PrepareTerraformCheck
+    displayName: Check Prepare Terraform
+    jobs:
+      - template: job/terraformApply.yaml
+        parameters:
+          terraformDir: $(System.DefaultWorkingDirectory)/k8s-app/terraform/pre
+          localApply: true
+
+  - stage: ClusterTerraformApply
+    displayName: Apply Cluster Terraform
+    dependsOn: PrepareTerraformCheck
+    jobs:
+      - template: job/terraformApply.yaml
+        parameters:
+          terraformDir: $(System.DefaultWorkingDirectory)/k8s-app/terraform/cluster
+          remoteBackend: 
+            backendType: azurerm
+            backendAzureRmResourceGroupName: 'edapp-aks-terraform-storage-rg-dev'
+            backendAzureRmResourceGroupLocation: 'centralus'
+            backendAzureRmStorageAccountName: 'ftstateaccount'
+            backendAzureRmStorageAccountSku: 'Standard_LRS'
+            backendAzureRmContainerName: 'tfstate'
+            backendAzureRmKey: edapp.dev.terraform.tfstate
+
+  - stage: BuildAndPublishDockerImage
+    displayName: Build And Publish Docker Image
+    dependsOn: ClusterTerraformApply
+    jobs:
+      - job: BuildTAndPublishService
+        displayName: 'Build And Publish Service'
+        steps:
+          - checkout: App
+            clean: false
+            path: App
+
+          - task: Docker@2
+            displayName: Login to ACR
+            inputs:
+              command: login
+              containerRegistry: Azure Container Register
+
+          - task: Docker@2
+            displayName: 'Build App Image'
+            inputs:
+              command: build
+              repository: techchallengeapp
+              dockerfile: $(Agent.BuildDirectory)/App/Dockerfile
+              buildContext: $(Agent.BuildDirectory)/App
+              tags: |
+                latest
+
+          - task: Docker@2
+            displayName: 'Push App Image'
+            inputs:
+              command: push
+              repository: techchallengeapp
+              tags: |
+                latest
+
+  - stage: DeployToKubenetesCluster
+    displayName: 'Deploy To Kubenetes Cluster'
+    dependsOn:
+      - BuildAndPublishDockerImage
+
+    jobs:
+      - template: job/kuberneteApply.yaml
+        parameters:
+          Service: PostgresDB
+          k8sDir: $(Build.SourcesDirectory)/k8s-app/k8s/postgresdb
+          cluster: servain-aks-dev
+          clusterResourceGroup: servain-aks-rg-dev
+          kubernetesScriptsFileNames:
+            - configmap.yaml
+            - persistvoloumn.yaml
+            - deployment.yaml
+            - service.yaml
+      
+      - template: job/kuberneteApply.yaml
+        parameters:
+          Service: App
+          k8sDir: $(Build.SourcesDirectory)/k8s-app/k8s/app
+          cluster: servain-aks-dev
+          clusterResourceGroup: servain-aks-rg-dev
+          kubernetesScriptsFileNames:
+            - configmap.yaml
+            - deployment.yaml
+            - service.yaml            
