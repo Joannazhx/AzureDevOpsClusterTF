@@ -51,7 +51,7 @@ jobs:
       - ${{ each File in parameters.KubernetesScriptsFileNames }}:
 
           - task: Kubernetes@1
-            displayName: kubectl deploy
+            displayName: kubectl deploy ${{ File }}
             inputs:
               connectionType: Azure Resource Manager
               azureSubscriptionEndpoint: Azure Service Manage
