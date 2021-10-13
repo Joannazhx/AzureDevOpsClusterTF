@@ -37,12 +37,13 @@
                    ├── configmap.yaml
                    ├── deployment.yaml
                    └── service.yaml
-     ├────── pipelines   # Azure pipeline to auto init, validate, plan, apply terraform 
+     ├────── pipelines   # Azure pipeline to auto init, validate, plan, apply terraform ; build & push docker image ; conatiner deploy to cluster
               ├── job  
                    ├── terraformApply.yaml
+                   └── kuberneteApply.yaml
               ├── step  
                    ├── terraformTask.yaml
-              ├── deployment.yaml
+              ├── continuousDeployment.yaml
 ```
 # Tools Install
 1. AzureCLi
@@ -126,19 +127,28 @@ http://20.84.192.206:3000
 ![image info](k8s-app/pics/webapp.png)
 # Azure Pipeline
 ## set ups
-1. create service connection in Azure Devsops projectsettings name as 'Azure Service Manage'
-![image info](k8s-app/pics/service_connection.png)
-2. create a pipeline with path: k8s-app/pipeline/deployment.yaml
+1. Create service connections
+ - Azure resource manage name 'Azure Service Manage'
+  ![image info](k8s-app/pics/service_connection.png)
+ - Docker Registry name 'Azure Container Register'
+  ![image info](k8s-app/pics/acr_service_connection.png)
+ - Kubernetes name 'Azure Kubernetes Cluster'
+  ![image info](k8s-app/pics/aks_service_connection.png)
+2. create a pipeline with path: k8s-app/pipeline/continuousDeployment.yaml
 ## yaml templates
-   - entry: [k8s-app/pipeline/deployment.yaml](k8s-app/pipeline/deployment.yaml) 
-   - terraform jobs: [k8s-app/pipeline/job/terraformApply.yaml](k8s-app/pipeline/job/terraformApply.yaml)
-   - terraformcli task: [k8s-app/pipeline/step/terraformTask.yaml](k8s-app/pipeline/step/terraformTask.yaml)
+   - entry: [k8s-app/pipeline/deployment.yaml](k8s-app/pipeline/continuousDeployment.yaml) 
+   - jobs template:
+      [k8s-app/pipeline/job/terraformApply.yaml](k8s-app/pipeline/job/terraformApply.yaml)
+      [k8s-app/pipeline/job/kuberneteApply.yaml](k8s-app/pipeline/job/kuberneteApply.yaml)
+   - task template: [k8s-app/pipeline/step/terraformTask.yaml](k8s-app/pipeline/step/terraformTask.yaml)
   
 ## pipeline stages
 ### brief
  2 stages in terraform deploy pipeline
   - Check Prepare Terraform
   - Apply cluster Terraform
+  - Build & Publish App Docker image
+  - Apply k8s scripts(deploy conatiners to k8s cluster)
 ![image info](k8s-app/pics/stages.png)
 ### 1. Prepare check stage
 workdir: terraform/pre/
@@ -161,6 +171,22 @@ workdir: terraform/pre/
  - tf plan 
 
 ![image info](k8s-app/pics/cluster_stage.png)
+### 3. Build & Publish App Docker Image
+ checkout another repo : https://github.com/Joannazhx/TechChallengeApp
+ - checkout App repo
+ - Login to ACR
+ - Build App Docker Image 
+ - Push App image to acr
+
+![image info](k8s-app/pics/docker_stage.png)
+### 4. Deploy To Kubenetes Cluster
+ 2 jobs : Deploy postgres & Deploy App
+ ![image info](k8s-app/pics/k8s_stage_jobs.png)
+ - checkout repo
+ - Kubectl Installer
+ - Kubectl Apply each file 
+ - logout az cluster
+![image info](k8s-app/pics/k8s_db.png)
 
 
 
