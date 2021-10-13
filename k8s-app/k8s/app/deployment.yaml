@@ -20,8 +20,7 @@ spec:
             do echo waiting for database; sleep 2; done;']
         - image: servainacr.azurecr.io/techchallengeapp:latest
           name: servian-db
-          imagePullPolicy: "IfNotPresent"
-          # imagePullPolicy: "Always"
+          imagePullPolicy: "Always"
           args: ["updatedb"]
           ports:
             - containerPort: 3000
@@ -32,8 +31,7 @@ spec:
       containers:
         - image: servainacr.azurecr.io/techchallengeapp:latest
           name: servian
-          imagePullPolicy: "IfNotPresent"
-          # imagePullPolicy: "Always"
+          imagePullPolicy: "Always"
           args: ["serve"]
           ports:
             - containerPort: 3000
@@ -41,7 +39,18 @@ spec:
             - name: config
               mountPath: /TechChallengeApp/conf.toml
               subPath: conf.toml
-
+          livenessProbe:
+            httpGet:
+              path: healthcheck/
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          startupProbe:
+            httpGet:
+              path: healthcheck/
+              port: 3000
+            failureThreshold: 30
+            periodSeconds: 10
       volumes:
         - name: config
           configMap:

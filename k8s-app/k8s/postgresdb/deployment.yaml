@@ -30,5 +30,6 @@ spec:
             claimName: postgres-pv-claim
 
 # PGPASSWORD=123 psql -h 20.106.30.224  -p 5432 -d app -U postgres
-#  kubectl exec -it postgres-7b9fb8d6c5-sjlp7  -- psql -U postgres
+# kubectl exec -it postgres-7b9fb8d6c5-sjlp7  -- psql -U postgres
 # az aks get-credentials --resource-group servain-aks-rg-dev  --name servain-aks-dev --overwrite
+# acr login -n servainacr
