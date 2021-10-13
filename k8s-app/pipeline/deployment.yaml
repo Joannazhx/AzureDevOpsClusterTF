@@ -1,10 +1,6 @@
 resources:
   repositories:
-    - repository: AzureDevops # The name used to reference this repository in the checkout step
-      type: github
-      endpoint: Joannazhx
-      name: Joannazhx/AzureDevOpsClusterTF
-    - repository: WebApp # The name used to reference this repository in the checkout step
+    - repository: WebApp # The Webapp repo for build docker image
       type: github
       endpoint: Joannazhx
       name: Joannazhx/TechChallengeApp
@@ -42,57 +38,70 @@ stages:
 #             backendAzureRmContainerName: 'tfstate'
 #             backendAzureRmKey: edapp.dev.terraform.tfstate
 
-#   - stage: BuildAndPublishDockerImage
-#     displayName: Build And Publish Docker Image
-#     dependsOn: ClusterTerraformApply
-#     jobs:
-#       - job: BuildTAndPublishService
-#         displayName: 'Build And Publish Service'
-#         steps:
-#           - checkout: WebApp
-#             clean: false
-#             path: WebApp
+  - stage: BuildAndPublishDockerImage
+    displayName: Build And Publish Docker Image
+    # dependsOn: ClusterTerraformApply
+    jobs:
+      - job: BuildTAndPublishService
+        displayName: 'Build And Publish Service'
+        steps:
+          - checkout: WebApp
+            clean: false
+            path: WebApp
 
-#           - task: Docker@2
-#             displayName: Login to ACR
-#             inputs:
-#               command: login
-#               containerRegistry: Azure Container Register
+          - task: Docker@2
+            displayName: Login to ACR
+            inputs:
+              command: login
+              containerRegistry: Azure Container Register
 
-#           - task: Docker@2
-#             displayName: 'Build WebApp Image'
-#             inputs:
-#               command: build
-#               repository: techchallengeapp
-#               dockerfile: $(Agent.BuildDirectory)/WebApp/Dockerfile
-#               buildContext: $(Agent.BuildDirectory)/WebApp
-#               tags: |
-#                 latest
+          - task: Docker@2
+            displayName: 'Build WebApp Image'
+            inputs:
+              command: build
+              repository: techchallengeapp
+              dockerfile: $(Agent.BuildDirectory)/WebApp/Dockerfile
+              buildContext: $(Agent.BuildDirectory)/WebApp
+              tags: |
+                latest
 
-#           - task: Docker@2
-#             displayName: 'Push WebApp Image'
-#             inputs:
-#               command: push
-#               repository: techchallengeapp
-#               tags: |
-#                 latest
+          - task: Docker@2
+            displayName: 'Push WebApp Image'
+            inputs:
+              command: push
+              repository: techchallengeapp
+              tags: |
+                latest
 
   - stage: DeployToKubenetesCluster
     displayName: 'Deploy To Kubenetes Cluster'
-    # dependsOn:
-    #   - BuildAndPublishDockerImage
+    dependsOn:
+      - BuildAndPublishDockerImage
 
     jobs:
       - template: job/kuberneteApply.yaml
         parameters:
+          Service: Postgres DB
           k8sDir: $(Build.SourcesDirectory)/k8s-app/k8s/postgresdb
-          cluster: ervain-aks-dev
+          cluster: servain-aks-dev
           clusterResourceGroup: servain-aks-rg-dev
           kubernetesScriptsFileNames:
             - configmap.yaml
             - persistvoloumn.yaml
             - deployment.yaml
             - service.yaml
+      
+      - template: job/kuberneteApply.yaml
+        parameters:
+          Service: App
+          k8sDir: $(Build.SourcesDirectory)/k8s-app/k8s/app
+          cluster: servain-aks-dev
+          clusterResourceGroup: servain-aks-rg-dev
+          kubernetesScriptsFileNames:
+            - configmap.yaml
+            - deployment.yaml
+            - service.yaml
+            
 
       # - job: DeployPostgresToAks
       #   displayName: Deploy Built Images to AKS and Clean up

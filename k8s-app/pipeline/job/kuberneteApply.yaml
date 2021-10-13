@@ -4,10 +4,9 @@ parameters:
     displayName: Kubernetes Scripts Dir Path
     type: string
 
-  # - name: azureContainerRegistry
-  #   displayName: Azure Container Registry Service Connection Name
-  #   type: string
-  #   default: Azure Container Register
+  - name: Service
+    displayName: Service Name
+    type: string
 
   - name: azurekubernetes
     displayName: Azure kubernetes Service Connection Name
@@ -28,18 +27,12 @@ parameters:
 
 jobs:
   - job: DeployPostgresToAks
-    displayName: Deploy Built Images to AKS and Clean up
+    displayName: Deploy ${{ parameters.Service }} to AKS and Clean up
 
     steps:
 
       - task: KubectlInstaller@0
         displayName: Kubectl Installer
-
-      # - task: Docker@2
-      #   displayName: Login to ACR
-      #   inputs:
-      #     command: login
-      #     containerRegistry: Azure Container Register
 
       - task: Kubernetes@1
         displayName: Setting up Kubeconfig
@@ -59,7 +52,6 @@ jobs:
               kubernetesCluster: servain-aks-dev
               command: apply
               arguments: -f ${{ parameters.k8sDir }}/${{ File }}
-
 
       - task: Kubernetes@1
         displayName: Cleaning up Kubeconfig
