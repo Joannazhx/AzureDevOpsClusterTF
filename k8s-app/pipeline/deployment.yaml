@@ -1,6 +1,6 @@
 resources:
   repositories:
-    - repository: WebApp # The Webapp repo for build docker image
+    - repository: App # The app repo for build docker image
       type: github
       endpoint: Joannazhx
       name: Joannazhx/TechChallengeApp
@@ -45,9 +45,9 @@ stages:
       - job: BuildTAndPublishService
         displayName: 'Build And Publish Service'
         steps:
-          - checkout: WebApp
+          - checkout: App
             clean: false
-            path: WebApp
+            path: App
 
           - task: Docker@2
             displayName: Login to ACR
@@ -56,17 +56,17 @@ stages:
               containerRegistry: Azure Container Register
 
           - task: Docker@2
-            displayName: 'Build WebApp Image'
+            displayName: 'Build App Image'
             inputs:
               command: build
               repository: techchallengeapp
-              dockerfile: $(Agent.BuildDirectory)/WebApp/Dockerfile
-              buildContext: $(Agent.BuildDirectory)/WebApp
+              dockerfile: $(Agent.BuildDirectory)/App/Dockerfile
+              buildContext: $(Agent.BuildDirectory)/App
               tags: |
                 latest
 
           - task: Docker@2
-            displayName: 'Push WebApp Image'
+            displayName: 'Push App Image'
             inputs:
               command: push
               repository: techchallengeapp
