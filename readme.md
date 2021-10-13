@@ -129,11 +129,14 @@ http://20.84.192.206:3000
 ## set ups
 1. Create service connections
  - Azure resource manage name 'Azure Service Manage'
-  ![image info](k8s-app/pics/service_connection.png)
+
+  <img src="k8s-app/pics/service_connection.png" width="800">
  - Docker Registry name 'Azure Container Register'
-  ![image info](k8s-app/pics/acr_service_connection.png)
+
+  <img src="k8s-app/pics/acr_service_connection.png" width="800">
  - Kubernetes name 'Azure Kubernetes Cluster'
-  ![image info](k8s-app/pics/aks_service_connection.png)
+ 
+  <img src="k8s-app/pics/aks_service_connection.png" width="800">
 2. create a pipeline with path: k8s-app/pipeline/continuousDeployment.yaml
 ## yaml templates
    - entry: [k8s-app/pipeline/deployment.yaml](k8s-app/pipeline/continuousDeployment.yaml) 
@@ -149,7 +152,9 @@ http://20.84.192.206:3000
   - Apply cluster Terraform
   - Build & Publish App Docker image
   - Apply k8s scripts(deploy conatiners to k8s cluster)
-![image info](k8s-app/pics/stages.png)
+ 
+<img src="k8s-app/pics/stages.png" width="600">
+
 ### 1. Prepare check stage
 workdir: terraform/pre/
   - checkout repo
@@ -159,7 +164,9 @@ workdir: terraform/pre/
   - tf plan 
   -  publish .tfplan 
   -  if resource change error ( apply local and udpate tfstate to master)
-![image info](k8s-app/pics/prepare_stage.png)
+  
+  <img src="k8s-app/pics/prepare_stage.png" width="300">
+  
 ### 2. Cluster Apply stage
  workdir: terraform/cluster/
  - checkout repo
@@ -170,7 +177,8 @@ workdir: terraform/pre/
  - publish .tfplan 
  - tf plan 
 
-![image info](k8s-app/pics/cluster_stage.png)
+<img src="k8s-app/pics/cluster_stage.png" width="300">
+
 ### 3. Build & Publish App Docker Image
  checkout another repo : https://github.com/Joannazhx/TechChallengeApp
  - checkout App repo
@@ -178,15 +186,19 @@ workdir: terraform/pre/
  - Build App Docker Image 
  - Push App image to acr
 
-![image info](k8s-app/pics/docker_stage.png)
+<img src="k8s-app/pics/docker_stage.png" width="300">
+
 ### 4. Deploy To Kubenetes Cluster
  2 jobs : Deploy postgres & Deploy App
- ![image info](k8s-app/pics/k8s_stage_jobs.png)
+ 
+ <img src="k8s-app/pics/k8s_stage_jobs.png" width="300">
+ 
  - checkout repo
  - Kubectl Installer
  - Kubectl Apply each file 
  - logout az cluster
-![image info](k8s-app/pics/k8s_db.png)
+
+ <img src="k8s-app/pics/k8s_db.png" width="300">
 
 
 
