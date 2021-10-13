@@ -61,7 +61,7 @@ stages:
             displayName: Login to ACR
             inputs:
               command: login
-              containerRegistry: servainacr
+              containerRegistry: Azure Container Register
 
           # '$(Agent.BuildDirectory)/QF-Repo/Source/Apps/WebApp/weblib/dist'
           - task: Docker@2
