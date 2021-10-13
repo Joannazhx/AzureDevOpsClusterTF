@@ -81,7 +81,7 @@ stages:
     jobs:
       - template: job/kuberneteApply.yaml
         parameters:
-          Service: Postgres DB
+          Service: PostgresDB
           k8sDir: $(Build.SourcesDirectory)/k8s-app/k8s/postgresdb
           cluster: servain-aks-dev
           clusterResourceGroup: servain-aks-rg-dev
