@@ -1,13 +1,13 @@
 resources:
   repositories:
-  - repository: AzureDevops # The name used to reference this repository in the checkout step
-    type: github
-    endpoint: Joannazhx
-    name: Joannazhx/AzureDevOpsClusterTF
-   - repository: WebApp # The name used to reference this repository in the checkout step
-    type: github
-    endpoint: Joannazhx
-    name: Joannazhx/TechChallengeApp
+    - repository: AzureDevops # The name used to reference this repository in the checkout step
+      type: github
+      endpoint: Joannazhx
+      name: Joannazhx/AzureDevOpsClusterTF
+    - repository: WebApp # The name used to reference this repository in the checkout step
+      type: github
+      endpoint: Joannazhx
+      name: Joannazhx/TechChallengeApp
 
 # trigger:
 #   branches:
