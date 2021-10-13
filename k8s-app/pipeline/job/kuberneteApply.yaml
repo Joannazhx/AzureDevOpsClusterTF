@@ -58,7 +58,7 @@ jobs:
               azureResourceGroup: servain-aks-rg-dev
               kubernetesCluster: servain-aks-dev
               command: apply
-              arguments: -f ${{ parameters.KubernetesScriptsFileNames }}/${{ File }}
+              arguments: -f ${{ parameters.k8sDir }}/${{ File }}
 
 
       - task: Kubernetes@1
