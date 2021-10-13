@@ -63,7 +63,7 @@ stages:
 #             displayName: 'Build WebApp Image'
 #             inputs:
 #               command: build
-#               repository: servian
+#               repository: techchallengeapp
 #               dockerfile: $(Agent.BuildDirectory)/WebApp/Dockerfile
 #               buildContext: $(Agent.BuildDirectory)/WebApp
 #               tags: |
@@ -73,7 +73,7 @@ stages:
 #             displayName: 'Push WebApp Image'
 #             inputs:
 #               command: push
-#               repository: servian
+#               repository: techchallengeapp
 #               tags: |
 #                 latest
 
@@ -83,133 +83,144 @@ stages:
     #   - BuildAndPublishDockerImage
 
     jobs:
-      - job: DeployPostgresToAks
-        displayName: Deploy Built Images to AKS and Clean up
+      - template: job/kuberneteApply.yaml
+        parameters:
+          k8sDir: $(Build.SourcesDirectory)/k8s-app/k8s/postgresdb
+          cluster: ervain-aks-dev
+          clusterResourceGroup: servain-aks-rg-dev
+          kubernetesScriptsFileNames:
+            - configmap.yaml
+            - persistvoloumn.yaml
+            - deployment.yaml
+            - service.yaml
 
-        steps:
+      # - job: DeployPostgresToAks
+      #   displayName: Deploy Built Images to AKS and Clean up
 
-          - task: KubectlInstaller@0
-            displayName: Kubectl Installer
+      #   steps:
 
-          - task: Docker@2
-            displayName: Login to ACR
-            inputs:
-              command: login
-              containerRegistry: Azure Container Register
+          # - task: KubectlInstaller@0
+          #   displayName: Kubectl Installer
 
-          - task: Kubernetes@1
-            displayName: Setting up Kubeconfig
-            inputs:
-              connectionType: Kubernetes Service Connection
-              kubernetesServiceEndpoint: Azure Kubernetes Cluster
-              command: login
+          # - task: Docker@2
+          #   displayName: Login to ACR
+          #   inputs:
+          #     command: login
+          #     containerRegistry: Azure Container Register
 
-          - task: Kubernetes@1
-            displayName: kubectl deploy
-            inputs:
-              connectionType: Azure Resource Manager
-              azureSubscriptionEndpoint: Azure Service Manage
-              azureResourceGroup: servain-aks-rg-dev
-              kubernetesCluster: servain-aks-dev
-              command: apply
-              arguments: -f $(Build.SourcesDirectory)/k8s-app/k8s/postgresdb/configmap.yaml
+          # - task: Kubernetes@1
+          #   displayName: Setting up Kubeconfig
+          #   inputs:
+          #     connectionType: Kubernetes Service Connection
+          #     kubernetesServiceEndpoint: Azure Kubernetes Cluster
+          #     command: login
 
-          - task: Kubernetes@1
-            displayName: kubectl apply deploy
-            inputs:
-              connectionType: Azure Resource Manager
-              azureSubscriptionEndpoint: Azure Service Manage
-              azureResourceGroup: servain-aks-rg-dev
-              kubernetesCluster: servain-aks-dev
-              command: apply
-              arguments: -f $(Build.SourcesDirectory)/k8s-app/k8s/postgresdb/persistvoloumn.yaml
+          # - task: Kubernetes@1
+          #   displayName: kubectl deploy
+          #   inputs:
+          #     connectionType: Azure Resource Manager
+          #     azureSubscriptionEndpoint: Azure Service Manage
+          #     azureResourceGroup: servain-aks-rg-dev
+          #     kubernetesCluster: servain-aks-dev
+          #     command: apply
+          #     arguments: -f $(Build.SourcesDirectory)/k8s-app/k8s/postgresdb/configmap.yaml
 
-          - task: Kubernetes@1
-            displayName: kubectl apply deploy
-            inputs:
-              connectionType: Azure Resource Manager
-              azureSubscriptionEndpoint: Azure Service Manage
-              azureResourceGroup: servain-aks-rg-dev
-              kubernetesCluster: servain-aks-dev
-              command: apply
-              arguments: -f $(Build.SourcesDirectory)/k8s-app/k8s/postgresdb/deployment.yaml
+          # - task: Kubernetes@1
+          #   displayName: kubectl apply deploy
+          #   inputs:
+          #     connectionType: Azure Resource Manager
+          #     azureSubscriptionEndpoint: Azure Service Manage
+          #     azureResourceGroup: servain-aks-rg-dev
+          #     kubernetesCluster: servain-aks-dev
+          #     command: apply
+          #     arguments: -f $(Build.SourcesDirectory)/k8s-app/k8s/postgresdb/persistvoloumn.yaml
 
-          - task: Kubernetes@1
-            displayName: kubectl apply deploy
-            inputs:
-              connectionType: Azure Resource Manager
-              azureSubscriptionEndpoint: Azure Service Manage
-              azureResourceGroup: servain-aks-rg-dev
-              kubernetesCluster: servain-aks-dev
-              command: apply
-              arguments: -f $(Build.SourcesDirectory)/k8s-app/k8s/postgresdb/service.yaml
+          # - task: Kubernetes@1
+          #   displayName: kubectl apply deploy
+          #   inputs:
+          #     connectionType: Azure Resource Manager
+          #     azureSubscriptionEndpoint: Azure Service Manage
+          #     azureResourceGroup: servain-aks-rg-dev
+          #     kubernetesCluster: servain-aks-dev
+          #     command: apply
+          #     arguments: -f $(Build.SourcesDirectory)/k8s-app/k8s/postgresdb/deployment.yaml
 
-          - task: Kubernetes@1
-            displayName: Cleaning up Kubeconfig
-            condition: always()
-            inputs:
-              connectionType: Kubernetes Service Connection
-              kubernetesServiceEndpoint: '${{ variables.AKSServiceConnection }}'
-              command: logout
+          # - task: Kubernetes@1
+          #   displayName: kubectl apply deploy
+          #   inputs:
+          #     connectionType: Azure Resource Manager
+          #     azureSubscriptionEndpoint: Azure Service Manage
+          #     azureResourceGroup: servain-aks-rg-dev
+          #     kubernetesCluster: servain-aks-dev
+          #     command: apply
+          #     arguments: -f $(Build.SourcesDirectory)/k8s-app/k8s/postgresdb/service.yaml
 
-      - job: DeployWebAppToAks
-        displayName: Deploy Built Images to AKS and Clean up
+          # - task: Kubernetes@1
+          #   displayName: Cleaning up Kubeconfig
+          #   condition: always()
+          #   inputs:
+          #     connectionType: Kubernetes Service Connection
+          #     kubernetesServiceEndpoint: '${{ variables.AKSServiceConnection }}'
+          #     command: logout
 
-        steps:
+      # - job: DeployWebAppToAks
+      #   displayName: Deploy Built Images to AKS and Clean up
 
-          - task: KubectlInstaller@0
-            displayName: Kubectl Installer
+      #   steps:
 
-          - task: Docker@2
-            displayName: Login to ACR
-            inputs:
-              command: login
-              containerRegistry: Azure Container Register
+      #     - task: KubectlInstaller@0
+      #       displayName: Kubectl Installer
 
-          - task: Kubernetes@1
-            displayName: Setting up Kubeconfig
-            inputs:
-              connectionType: Kubernetes Service Connection
-              kubernetesServiceEndpoint: Azure Kubernetes Cluster
-              command: login
+      #     - task: Docker@2
+      #       displayName: Login to ACR
+      #       inputs:
+      #         command: login
+      #         containerRegistry: Azure Container Register
 
-          - task: Kubernetes@1
-            displayName: kubectl deploy
-            inputs:
-              connectionType: Azure Resource Manager
-              azureSubscriptionEndpoint: Azure Service Manage
-              azureResourceGroup: servain-aks-rg-dev
-              kubernetesCluster: servain-aks-dev
-              command: apply
-              arguments: -f $(Build.SourcesDirectory)/k8s-app/k8s/app/configmap.yaml
-              
-          - task: Kubernetes@1
-            displayName: kubectl apply deploy
-            inputs:
-              connectionType: Azure Resource Manager
-              azureSubscriptionEndpoint: Azure Service Manage
-              azureResourceGroup: servain-aks-rg-dev
-              kubernetesCluster: servain-aks-dev
-              command: apply
-              arguments: -f $(Build.SourcesDirectory)/k8s-app/k8s/app/deployment.yaml
+      #     - task: Kubernetes@1
+      #       displayName: Setting up Kubeconfig
+      #       inputs:
+      #         connectionType: Kubernetes Service Connection
+      #         kubernetesServiceEndpoint: Azure Kubernetes Cluster
+      #         command: login
 
-          - task: Kubernetes@1
-            displayName: kubectl apply deploy
-            inputs:
-              connectionType: Azure Resource Manager
-              azureSubscriptionEndpoint: Azure Service Manage
-              azureResourceGroup: servain-aks-rg-dev
-              kubernetesCluster: servain-aks-dev
-              command: apply
-              arguments: -f $(Build.SourcesDirectory)/k8s-app/k8s/app/service.yaml
+      #     - task: Kubernetes@1
+      #       displayName: kubectl deploy
+      #       inputs:
+      #         connectionType: Azure Resource Manager
+      #         azureSubscriptionEndpoint: Azure Service Manage
+      #         azureResourceGroup: servain-aks-rg-dev
+      #         kubernetesCluster: servain-aks-dev
+      #         command: apply
+      #         arguments: -f $(Build.SourcesDirectory)/k8s-app/k8s/app/configmap.yaml
 
-          - task: Kubernetes@1
-            displayName: Cleaning up Kubeconfig
-            condition: always()
-            inputs:
-              connectionType: Kubernetes Service Connection
-              kubernetesServiceEndpoint: '${{ variables.AKSServiceConnection }}'
-              command: logout
+      #     - task: Kubernetes@1
+      #       displayName: kubectl apply deploy
+      #       inputs:
+      #         connectionType: Azure Resource Manager
+      #         azureSubscriptionEndpoint: Azure Service Manage
+      #         azureResourceGroup: servain-aks-rg-dev
+      #         kubernetesCluster: servain-aks-dev
+      #         command: apply
+      #         arguments: -f $(Build.SourcesDirectory)/k8s-app/k8s/app/deployment.yaml
+
+      #     - task: Kubernetes@1
+      #       displayName: kubectl apply deploy
+      #       inputs:
+      #         connectionType: Azure Resource Manager
+      #         azureSubscriptionEndpoint: Azure Service Manage
+      #         azureResourceGroup: servain-aks-rg-dev
+      #         kubernetesCluster: servain-aks-dev
+      #         command: apply
+      #         arguments: -f $(Build.SourcesDirectory)/k8s-app/k8s/app/service.yaml
+
+      #     - task: Kubernetes@1
+      #       displayName: Cleaning up Kubeconfig
+      #       condition: always()
+      #       inputs:
+      #         connectionType: Kubernetes Service Connection
+      #         kubernetesServiceEndpoint: '${{ variables.AKSServiceConnection }}'
+      #         command: logout
 
       
 
