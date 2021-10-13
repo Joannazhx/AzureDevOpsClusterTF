@@ -17,7 +17,7 @@ resources:
 pool:
   vmImage: 'ubuntu-latest'
 
-# stages: 
+stages: 
 #   - stage: PrepareTerraformCheck
 #     displayName: Check Prepare Terraform
 #     jobs:
