@@ -1,7 +1,18 @@
-trigger:
-  branches:
-    include:
-      - master
+resources:
+  repositories:
+  - repository: AzureDevops # The name used to reference this repository in the checkout step
+    type: github
+    endpoint: Joannazhx
+    name: Joannazhx/AzureDevOpsClusterTF
+   - repository: WebApp # The name used to reference this repository in the checkout step
+    type: github
+    endpoint: Joannazhx
+    name: Joannazhx/TechChallengeApp
+
+# trigger:
+#   branches:
+#     include:
+#       - master
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -30,4 +41,44 @@ stages:
             backendAzureRmStorageAccountSku: 'Standard_LRS'
             backendAzureRmContainerName: 'tfstate'
             backendAzureRmKey: edapp.dev.terraform.tfstate
-  
+
+  - stage: BuildAndPublishDockerImage
+    displayName: Build And Publish Docker Image
+    dependsOn: ClusterTerraformApply
+    jobs:
+      - job: BuildTAndPublishService
+        displayName: 'Build And Publish Service'
+        steps:
+          - checkout: WebApp
+            clean: false
+            path: WebApp
+
+          - checkout: AzureDevops
+            clean: false
+            path: AzureDevOps
+
+          - task: Docker@2
+            displayName: Login to ACR
+              inputs:
+                command: login
+                containerRegistry: servainacr
+
+          # '$(Agent.BuildDirectory)/QF-Repo/Source/Apps/WebApp/weblib/dist'
+          - task: Docker@2
+            displayName: 'Build WebApp Image'
+            inputs:
+              command: build
+              repository: servian
+              dockerfile: $(Agent.BuildDirectory)/WebApp/Dockerfile
+              buildContext: $(Agent.BuildDirectory)/WebApp
+              tags: |
+                latest
+
+          - task: Docker@2
+            displayName: 'Push WebApp Image'
+            inputs:
+              command: push
+              repository: servian
+              tags: |
+                latest
+
